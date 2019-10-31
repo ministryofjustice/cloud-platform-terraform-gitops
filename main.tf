@@ -2,7 +2,11 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 provider "concourse" {
-  target = "z"
+  url  = "https://z.apps.concourse-op.cloud-platform.service.justice.gov.uk/"
+  team = "main"
+
+  username = "${var.CONCOURSE_BASIC_AUTH_USERNAME}"
+  password = "${var.CONCOURSE_BASIC_AUTH_PASSWORD}"
 }
 
 data "concourse_team" "my_team" {
