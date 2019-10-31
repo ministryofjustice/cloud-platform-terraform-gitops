@@ -22,20 +22,21 @@ output "my_team_members" {
 }
 
 resource "concourse_team" "my_team" {
-  team_name = "z"
+  team_name = "y"
 
   owners = [
-    "user:github:razvan-moj",
+    "group:github:ministryofjustice:${var.smth}",
+    "group:github:ministryofjustice:webops"
   ]
 
   viewers = [
-    "user:github:jasonBirchall"
+    "group:github:ministryofjustice",
   ]
 }
 
 resource "concourse_pipeline" "my_pipeline" {
-  team_name     = "z"
-  pipeline_name = "z"
+  team_name     = "y"
+  pipeline_name = "y"
 
   is_exposed = false
   is_paused  = true
