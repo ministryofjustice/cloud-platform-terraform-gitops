@@ -1,31 +1,29 @@
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
+# All variables in provider.concourse are defined in the
+# cloud-platform-environments:build pipeline.
 provider "concourse" {
-  url  = "https://z.apps.concourse-op.cloud-platform.service.justice.gov.uk/"
-  team = "main"
+  url  = "${var.concourse_url}"
+  team = "main" # has to be main to approve change
 
-  username = "${var.CONCOURSE_BASIC_AUTH_USERNAME}"
-  password = "${var.CONCOURSE_BASIC_AUTH_PASSWORD}"
+  username = "${var.concourse_basic_auth_username}"
+  password = "${var.concourse_basic_auth_password}"
 }
 
-data "concourse_team" "my_team" {
-  team_name = "main"
-}
-
-output "my_team_owners" {
-  value = "${data.concourse_team.my_team.owners}"
-}
-
-output "my_team_members" {
-  value = "${data.concourse_team.my_team.members}"
-}
+#output "my_team_owners" {
+#  value = "${data.concourse_team.my_team.owners}"
+#}
+#
+#output "my_team_members" {
+#  value = "${data.concourse_team.my_team.members}"
+#}
 
 resource "concourse_team" "my_team" {
-  team_name = "y"
+  team_name = "${var.github_team}"
 
   owners = [
-    "group:github:ministryofjustice:${var.smth}",
+    "group:github:ministryofjustice:${var.github_team}",
     "group:github:ministryofjustice:webops"
   ]
 
@@ -34,9 +32,9 @@ resource "concourse_team" "my_team" {
   ]
 }
 
-resource "concourse_pipeline" "my_pipeline" {
-  team_name     = "y"
-  pipeline_name = "y"
+resource "concourse_pipeline" "namespace_pipeline" {
+  team_name     = "${var.github_team}"
+  pipeline_name = "${var.namespace}"
 
   is_exposed = false
   is_paused  = true
