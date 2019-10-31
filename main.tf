@@ -39,6 +39,6 @@ resource "concourse_pipeline" "namespace_pipeline" {
   is_exposed = false
   is_paused  = true
 
-  pipeline_config        = "${file("z.yml")}"
+  pipeline_config        = "${file("${path.module}/z.yml")}"
   pipeline_config_format = "yaml"
 }
