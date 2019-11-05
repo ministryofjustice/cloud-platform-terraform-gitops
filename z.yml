@@ -7,15 +7,15 @@ resources:
 - name: tools-image
   type: docker-image
   source:
-    repository: registry.hub.docker.com/ministryofjustice/cloud-platform-smoke-tests
-    tag: 1.3
+    repository: ministryofjustice/cloud-platform-tools
+    tag: concourse
 
 groups: 
-- name: applicaton
-  jobs: [apply-application]
+- name: deploy
+  jobs: [deploy-application]
 
 jobs:
-- name: apply-application
+- name: deploy-application
   serial: true
   plan:
     - aggregate:
@@ -31,4 +31,21 @@ jobs:
           - name: helloworld-repository
         run:
           path: /bin/sh
-          
+            KUBECONFIG_AWS_ACCESS_KEY_ID: ((aws-concourse-op.access-key-id))
+            KUBECONFIG_AWS_SECRET_ACCESS_KEY: ((aws-concourse-op.secret-access-key))
+            KUBECONFIG: /tmp/kubeconfig
+            # the variables prefixed with PIPELINE_ are used by the apply script
+            TF_VAR_concourse_basic_auth_username: ((concourse-basic-auth.username))
+            TF_VAR_concourse_basic_auth_password: ((concourse-basic-auth.password))
+          run:
+            path: /bin/sh
+            dir: cloud-platform-environments-repo
+            args:
+              - -c
+              - |
+                (
+                  AWS_ACCESS_KEY_ID="${KUBECONFIG_AWS_ACCESS_KEY_ID}"
+                  AWS_SECRET_ACCESS_KEY="${KUBECONFIG_AWS_SECRET_ACCESS_KEY}"
+                  aws s3 cp s3://cloud-platform-concourse-kubeconfig/concourse-config /tmp/kubeconfig
+                )
+                kubectl apply -f ./cloud-platform-deploy/helloworld-dev/. -n helloworld-dev --as "system:serviceaccount:helloworld-dev:deploy" 
