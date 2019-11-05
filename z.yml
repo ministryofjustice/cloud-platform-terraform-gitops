@@ -1,27 +1,34 @@
-jobs:
-- name: cronjobber
-  plan:
-  - get: tools-image
-  - config:
-      container_limits: {}
-      outputs:
-      - name: files
-      params:
-        RELEASE: 0.2.0
-      platform: linux
-      run:
-        args:
-        - -exc
-        - |
-          wget -q https://github.com/hiddeco/cronjobber/archive/${RELEASE}.tar.gz
-          tar xzf ${RELEASE}.tar.gz --strip-components=1
-        dir: files
-        path: /bin/bash
-    image: tools-image
-    task: download
 resources:
-- name: tools-image
+- name: helloworld-repository
+  type: git
   source:
-    repository: ministryofjustice/cloud-platform-tools
-    tag: 1.3
+    uri: https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app
+    branch: add/gitops
+- name: tools-image
   type: docker-image
+  source:
+    repository: registry.hub.docker.com/ministryofjustice/cloud-platform-smoke-tests
+    tag: 1.3
+
+groups: 
+- name: applicaton
+  jobs: [apply-application]
+
+jobs:
+- name: apply-application
+  serial: true
+  plan:
+    - aggregate:
+      - get: helloworld-repository
+        trigger: true
+      - get: tools-image
+        trigger: false
+    - task:
+      image: tools-image
+      config:
+        platform: linux
+        inputs:
+          - name: helloworld-repository
+        run:
+          path: /bin/sh
+          
