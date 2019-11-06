@@ -13,7 +13,7 @@ provider "concourse" {
 
 # Pipeline manifest creation
 data "template_file" "pipeline" {
-  template = "${file("${path.module}/z.yaml")}"
+  template = "${file("${path.module}/pipeline.yaml")}"
 
   vars {
     namespace       = "${var.namespace}"
