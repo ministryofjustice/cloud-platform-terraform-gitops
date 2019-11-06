@@ -2,7 +2,7 @@ resources:
 - name: ${namespace}-repository
   type: git
   source:
-    uri: ${source_code}.git
+    uri: ${source_code_url}.git
     branch: ${branch}
 - name: tools-image
   type: docker-image
