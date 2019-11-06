@@ -5,27 +5,36 @@ data "aws_region" "current" {}
 # cloud-platform-environments:build pipeline.
 provider "concourse" {
   url  = "${var.concourse_url}"
-  team = "main" # has to be main to approve change
+  team = "main"                 # has to be main to approve change
 
   username = "${var.concourse_basic_auth_username}"
   password = "${var.concourse_basic_auth_password}"
 }
 
-#output "my_team_owners" {
-#  value = "${data.concourse_team.my_team.owners}"
-#}
-#
-#output "my_team_members" {
-#  value = "${data.concourse_team.my_team.members}"
-#}
+# Pipeline manifest creation
+data "template_file" "pipeline" {
+  template = "${file("${path.module}/z.yaml")}"
+}
 
+vars {
+  namespace       = "${var.namespace}"
+  source_code_url = "${var.source_code_url}"
+  branch          = "${var.branch}"
+}
+
+resource "local_file" "pipeline" {
+  content  = "${data.template_file.pipeline.rendered}"
+  filename = "./z.yaml"
+}
+
+# Team and pipeline creation
 resource "concourse_team" "my_team" {
   team_name = "${var.github_team}"
 
   owners = [
     "user:local:raz",
     "group:github:ministryofjustice:${var.github_team}",
-    "group:github:ministryofjustice:webops"
+    "group:github:ministryofjustice:webops",
   ]
 
   viewers = [
@@ -34,6 +43,7 @@ resource "concourse_team" "my_team" {
 }
 
 resource "concourse_pipeline" "namespace_pipeline" {
+  depends_on    = ["local_file.pipeline"]
   team_name     = "${var.github_team}"
   pipeline_name = "${var.namespace}"
 
