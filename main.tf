@@ -14,12 +14,12 @@ provider "concourse" {
 # Pipeline manifest creation
 data "template_file" "pipeline" {
   template = "${file("${path.module}/z.yaml")}"
-}
 
-vars {
-  namespace       = "${var.namespace}"
-  source_code_url = "${var.source_code_url}"
-  branch          = "${var.branch}"
+  vars {
+    namespace       = "${var.namespace}"
+    source_code_url = "${var.source_code_url}"
+    branch          = "${var.branch}"
+  }
 }
 
 resource "local_file" "pipeline" {
