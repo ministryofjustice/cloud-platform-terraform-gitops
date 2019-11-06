@@ -3,7 +3,7 @@ resources:
   type: git
   source:
     uri: ${source_code}.git
-    branch: add/gitops
+    branch: ${branch}
 - name: tools-image
   type: docker-image
   source:
