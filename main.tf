@@ -22,11 +22,6 @@ data "template_file" "pipeline" {
   }
 }
 
-resource "local_file" "pipeline" {
-  content  = "${data.template_file.pipeline.rendered}"
-  filename = "./z.yaml"
-}
-
 # Team and pipeline creation
 resource "concourse_team" "my_team" {
   team_name = "${var.github_team}"
@@ -50,6 +45,6 @@ resource "concourse_pipeline" "namespace_pipeline" {
   is_exposed = false
   is_paused  = true
 
-  pipeline_config        = "${file("${path.module}/z.yml")}"
+  pipeline_config        = "${data.template_file.pipeline.rendered}"
   pipeline_config_format = "yaml"
 }
