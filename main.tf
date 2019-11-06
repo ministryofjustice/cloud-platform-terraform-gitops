@@ -38,7 +38,7 @@ resource "concourse_team" "my_team" {
 }
 
 resource "concourse_pipeline" "namespace_pipeline" {
-  depends_on    = ["template_file.pipeline"]
+  depends_on    = ["data.template_file.pipeline"]
   team_name     = "${var.github_team}"
   pipeline_name = "${var.namespace}"
 
