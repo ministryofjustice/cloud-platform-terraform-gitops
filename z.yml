@@ -1,8 +1,8 @@
 resources:
-- name: helloworld-repository
+- name: ${namespace}-repository
   type: git
   source:
-    uri: https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app.git
+    uri: ${source_code}.git
     branch: add/gitops
 - name: tools-image
   type: docker-image
@@ -20,22 +20,22 @@ jobs:
   serial: true
   plan:
     - aggregate:
-      - get: helloworld-repository
+      - get: ${namespace}-repository
         trigger: true
       - get: tools-image
-    - task: helloworld
+    - task: ${namespace}
       image: tools-image
       config:
         platform: linux
         inputs:
-          - name: helloworld-repository
+          - name: ${namespace}-repository
         params:
           AWS_ACCESS_KEY_ID: ((aws-concourse-op.access-key-id))
           AWS_SECRET_ACCESS_KEY: ((aws-concourse-op.secret-access-key))
           KUBECONFIG: /tmp/kubeconfig
         run:
           path: /bin/bash
-          dir: helloworld-repository
+          dir: ${namespace}-repository
           args:
             - -c
             - |
@@ -44,4 +44,4 @@ jobs:
                 AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
                 aws s3 cp s3://cloud-platform-concourse-kubeconfig/concourse-config /tmp/kubeconfig
               )
-              kubectl -n helloworld-dev apply -f ./cloud-platform-deploy/helloworld-dev/. --as "system:serviceaccount:helloworld-dev:deploy"
+              kubectl -n ${namespace} apply -f ./cloud-platform-deploy/helloworld-dev/. --as "system:serviceaccount:${namespace}:deploy"
