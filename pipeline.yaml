@@ -40,8 +40,8 @@ jobs:
             - -c
             - |
               (
-                AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
-                AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+                AWS_ACCESS_KEY_ID="$${AWS_ACCESS_KEY_ID}"
+                AWS_SECRET_ACCESS_KEY="$${AWS_SECRET_ACCESS_KEY}"
                 aws s3 cp s3://cloud-platform-concourse-kubeconfig/concourse-config /tmp/kubeconfig
               )
               kubectl -n ${namespace} apply -f ./cloud-platform-deploy/helloworld-dev/. --as "system:serviceaccount:${namespace}:deploy"
