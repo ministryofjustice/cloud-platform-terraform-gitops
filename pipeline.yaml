@@ -19,7 +19,7 @@ jobs:
 - name: deploy-application
   serial: true
   plan:
-    - aggregate:
+    - in_parallel:
       - get: ${namespace}-repository
         trigger: true
       - get: tools-image

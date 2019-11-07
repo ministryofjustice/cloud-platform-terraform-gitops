@@ -11,7 +11,7 @@ provider "concourse" {
   password = "${var.concourse_basic_auth_password}"
 }
 
-# Pipeline manifest creation
+# Team and pipeline creation
 data "template_file" "pipeline" {
   template = "${file("${path.module}/pipeline.yaml")}"
 
@@ -21,8 +21,6 @@ data "template_file" "pipeline" {
     branch          = "${var.branch}"
   }
 }
-
-# Team and pipeline creation
 resource "concourse_team" "my_team" {
   team_name = "${var.github_team}"
 
