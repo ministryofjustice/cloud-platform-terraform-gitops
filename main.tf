@@ -19,13 +19,14 @@ data "template_file" "pipeline" {
     namespace       = "${var.namespace}"
     source_code_url = "${var.source_code_url}"
     branch          = "${var.branch}"
+    github_team     = "${var.github_team}"
   }
 }
 resource "concourse_team" "my_team" {
   team_name = "${var.github_team}"
 
   owners = [
-    "user:local:raz",
+    "user:local:thegit",
     "group:github:ministryofjustice:${var.github_team}",
     "group:github:ministryofjustice:webops",
   ]
