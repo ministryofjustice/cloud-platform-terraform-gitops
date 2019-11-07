@@ -42,6 +42,6 @@ jobs:
               (
                 AWS_ACCESS_KEY_ID="$${AWS_ACCESS_KEY_ID}"
                 AWS_SECRET_ACCESS_KEY="$${AWS_SECRET_ACCESS_KEY}"
-                aws s3 cp s3://cloud-platform-concourse-kubeconfig/concourse-config /tmp/kubeconfig
+                aws s3 cp s3://cloud-platform-concourse-kubeconfig/gitops-config /tmp/kubeconfig
               )
               kubectl -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:${namespace}:deploy"
