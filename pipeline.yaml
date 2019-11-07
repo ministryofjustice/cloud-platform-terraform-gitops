@@ -44,4 +44,4 @@ jobs:
                 AWS_SECRET_ACCESS_KEY="$${AWS_SECRET_ACCESS_KEY}"
                 aws s3 cp s3://cloud-platform-concourse-kubeconfig/gitops-config /tmp/kubeconfig
               )
-              kubectl -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:${github_team}:deploy"
+              kubectl -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:concourse-${github_team}:deploy"
