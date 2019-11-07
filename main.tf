@@ -41,7 +41,7 @@ resource "concourse_pipeline" "namespace_pipeline" {
   pipeline_name = "${var.namespace}"
 
   is_exposed = false
-  is_paused  = true
+  is_paused  = false
 
   pipeline_config        = "${data.template_file.pipeline.rendered}"
   pipeline_config_format = "yaml"
