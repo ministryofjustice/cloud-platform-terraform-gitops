@@ -30,8 +30,8 @@ jobs:
         inputs:
           - name: ${namespace}-repository
         params:
-          AWS_ACCESS_KEY_ID: ((aws-live-1.access-key-id))
-          AWS_SECRET_ACCESS_KEY: ((aws-live-1.secret-access-key))
+          AWS_ACCESS_KEY_ID: ((concourse-s3-bucket.access_key_id))
+          AWS_SECRET_ACCESS_KEY: ((concourse-s3-bucket.secret_access_key))
           KUBECONFIG: /tmp/kubeconfig
         run:
           path: /bin/bash
