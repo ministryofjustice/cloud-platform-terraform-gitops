@@ -4,6 +4,11 @@ resources:
   source:
     uri: ${source_code_url}.git
     branch: ${branch}
+- name: gitops-repository
+  type: git
+  source:
+    uri: https://github.com/ministryofjustice/cloud-platform-terraform-gitops
+    branch: master
 - name: tools-image
   type: docker-image
   source:
@@ -21,6 +26,8 @@ jobs:
   plan:
     - in_parallel:
       - get: ${namespace}-repository
+        trigger: true
+      - get: gitops-repository
         trigger: true
       - get: tools-image
     - task: ${namespace}
