@@ -37,6 +37,7 @@ jobs:
         inputs:
           - name: ${namespace}-repository
         params:
+          KUBECONFIG: "/tmp/kubconfig"
           KUBESECRET: ((kubectl-conf.kubeconfig))
         run:
           path: /bin/bash
@@ -44,6 +45,5 @@ jobs:
           args:
             - -c
             - |
-              printf "%s" "$${KUBESECRET}" >~/.kube/config
-              cat ~/.kube/config
-              kubectl -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:concourse-${github_team}:deploy"
+              printf "%s" "$${KUBESECRET}" >"$${KUBECONFIG}"
+              kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:concourse-${github_team}:deploy"
