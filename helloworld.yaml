@@ -1,0 +1,51 @@
+groups:
+- jobs:
+  - deploy-application
+  name: deploy
+jobs:
+- name: deploy-application
+  plan:
+  - in_parallel:
+      steps:
+      - get: helloworld-dev-repository
+        trigger: true
+      - get: gitops-repository
+        trigger: true
+      - get: tools-image
+  - config:
+      container_limits: {}
+      inputs:
+      - name: helloworld-dev-repository
+      params:
+        KUBECONFIG: /tmp/kubconfig
+        KUBESECRET: ((kubectl-conf.kubeconfig))
+      platform: linux
+      run:
+        args:
+        - -c
+        - |
+          printf "%s" "${KUBESECRET}" >"${KUBECONFIG}"
+          kubectl --kubeconfig "${KUBECONFIG}" -n concourse-webops get secret gitops-key -ojson | jq -r '.data.key | @base64d' | gpg --batch --import
+          git-crypt unlock
+          kubectl --kubeconfig "${KUBECONFIG}" -n helloworld-dev apply -f ./cloud-platform-deploy/helloworld-dev/. --as "system:serviceaccount:concourse-webops:deploy"
+        dir: helloworld-dev-repository
+        path: /bin/bash
+    image: tools-image
+    task: helloworld-dev
+  serial: true
+resources:
+- name: gitops-repository
+  source:
+    branch: master
+    uri: https://github.com/ministryofjustice/cloud-platform-terraform-gitops
+  type: git
+- name: helloworld-dev-repository
+  source:
+    branch: add/gitops
+    uri: https://github.com/ministryofjustice/cloud-platform-helloworld-ruby-app.git
+  type: git
+- name: tools-image
+  source:
+    repository: ministryofjustice/cloud-platform-tools
+    tag: concourse
+  type: docker-image
