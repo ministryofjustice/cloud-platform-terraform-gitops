@@ -37,15 +37,16 @@ jobs:
         inputs:
           - name: ${namespace}-repository
         params:
+          AWS_ACCESS_KEY_ID: ((aws-creds.access-key-id))
+          AWS_SECRET_ACCESS_KEY: ((aws-creds.secret-access-key))
           KUBECONFIG: "/tmp/kubconfig"
-          KUBESECRET: ((kubectl-conf.kubeconfig))
         run:
           path: /bin/bash
           dir: ${namespace}-repository
           args:
             - -c
             - |
-              printf "%s" "$${KUBESECRET}" >"$${KUBECONFIG}"
+              aws s3 cp s3://cloud-platform-concourse-kubeconfig/kubeconfig /tmp/kubeconfig
               kubectl --kubeconfig "$${KUBECONFIG}" -n concourse-${github_team} get secret ${github_team}-gpg-seckey -ojson | jq -r '.data.key | @base64d' | gpg --batch --import
               git-crypt unlock
               kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:concourse-${github_team}:deploy"
