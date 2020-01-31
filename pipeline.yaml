@@ -46,6 +46,6 @@ jobs:
             - -c
             - |
               printf "%s" "$${KUBESECRET}" >"$${KUBECONFIG}"
-              kubectl --kubeconfig "$${KUBECONFIG}" -n concourse-${github_team} get secret ${github_team}-gpg-seckey -ojson | jq -r '.data.key | @base64d' | gpg --batch --import
+              kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} get secret ${github_team}-gpg-seckey -ojson | jq -r '.data.key | @base64d' | gpg --batch --import
               git-crypt unlock
-              kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:concourse-${github_team}:deploy"
+              kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:${namespace}:deploy"
