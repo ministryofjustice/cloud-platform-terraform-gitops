@@ -50,4 +50,4 @@ jobs:
               kubectl config use-context "$${KUBECONTEXT}"
               kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} get secret ${github_team}-gpg-seckey -ojson | jq -r '.data.key | @base64d' | gpg --batch --import
               git-crypt unlock
-              kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:${namespace}:deploy"
+              kubectl --kubeconfig "$${KUBECONFIG}" -n ${namespace} apply -f ./cloud-platform-deploy/${namespace}/. --as "system:serviceaccount:${namespace}:gitops-deploy"
