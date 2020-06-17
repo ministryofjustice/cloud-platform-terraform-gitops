@@ -31,7 +31,7 @@ resource "concourse_team" "my_team" {
 
   owners = [
     # username for basic auth
-    "user:local:8YTEkgtwiwHYXk7w",
+    "user:local:${var.concourse_basic_auth_username}",
     "group:github:ministryofjustice:${var.github_team}",
     "group:github:ministryofjustice:webops",
   ]
